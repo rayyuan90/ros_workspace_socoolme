@@ -1,0 +1,8 @@
+# Ignore ROS 2 generated directories
+build/
+install/
+log/
+
+# Ignore local hidden tool configs
+.build/
+.cache/
