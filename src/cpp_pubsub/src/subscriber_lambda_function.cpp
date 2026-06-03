@@ -3,14 +3,17 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "tutorial_interfaces/msg/num.hpp"                                       // CHANGE
+#include "rclcpp_components/register_node_macro.hpp"
 
 using std::placeholders::_1;
+
+namespace cpp_pubsub {
 
 class MinimalSubscriber : public rclcpp::Node
 {
 public:
-  MinimalSubscriber()
-  : Node("minimal_subscriber")
+  explicit MinimalSubscriber(const rclcpp::NodeOptions & options = rclcpp::NodeOptions())
+  : Node("minimal_subscriber", options)
   {
     auto topic_callback = [this](const tutorial_interfaces::msg::Num & msg){     // CHANGE
       RCLCPP_INFO_STREAM(this->get_logger(), "I heard: '" << msg.num << "'");    // CHANGE
@@ -23,10 +26,6 @@ private:
   rclcpp::Subscription<tutorial_interfaces::msg::Num>::SharedPtr subscription_;  // CHANGE
 };
 
-int main(int argc, char * argv[])
-{
-  rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<MinimalSubscriber>());
-  rclcpp::shutdown();
-  return 0;
-}
+} // namespace cpp_pubsub
+
+RCLCPP_COMPONENTS_REGISTER_NODE(cpp_pubsub::MinimalSubscriber)

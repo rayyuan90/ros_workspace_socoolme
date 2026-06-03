@@ -3,14 +3,17 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "tutorial_interfaces/msg/num.hpp"                                            // CHANGE
+#include "rclcpp_components/register_node_macro.hpp"
 
 using namespace std::chrono_literals;
+
+namespace cpp_pubsub {
 
 class MinimalPublisher : public rclcpp::Node
 {
 public:
-  MinimalPublisher()
-  : Node("minimal_publisher"), count_(0)
+  explicit MinimalPublisher(const rclcpp::NodeOptions & options = rclcpp::NodeOptions())
+  : Node("minimal_publisher", options), count_(0)
   {
     publisher_ = this->create_publisher<tutorial_interfaces::msg::Num>("topic", 10);  // CHANGE
 
@@ -29,10 +32,6 @@ private:
   size_t count_;
 };
 
-int main(int argc, char * argv[])
-{
-  rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<MinimalPublisher>());
-  rclcpp::shutdown();
-  return 0;
-}
+} // namespace cpp_pubsub
+
+RCLCPP_COMPONENTS_REGISTER_NODE(cpp_pubsub::MinimalPublisher)

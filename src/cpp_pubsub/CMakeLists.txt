@@ -12,17 +12,30 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(tutorial_interfaces REQUIRED)  
+find_package(rclcpp_components REQUIRED)
+find_package(tutorial_interfaces REQUIRED)
 
-add_executable(talker src/publisher_lambda_function.cpp)
-ament_target_dependencies(talker rclcpp tutorial_interfaces)    # CHANGE
+# Build a shared library with both components registered
+add_library(cpp_pubsub_components SHARED
+  src/publisher_lambda_function.cpp
+  src/subscriber_lambda_function.cpp)
 
-add_executable(listener src/subscriber_lambda_function.cpp)
-ament_target_dependencies(listener rclcpp tutorial_interfaces)  # CHANGE
+target_compile_definitions(cpp_pubsub_components PRIVATE "COMPOSITION_BUILDING_DLL")
+ament_target_dependencies(cpp_pubsub_components rclcpp rclcpp_components tutorial_interfaces)
+
+# Register components (done in source with macros as well)
+rclcpp_components_register_node(cpp_pubsub_components PLUGIN "cpp_pubsub::MinimalPublisher" EXECUTABLE talker)
+rclcpp_components_register_node(cpp_pubsub_components PLUGIN "cpp_pubsub::MinimalSubscriber" EXECUTABLE listener)
 
 install(TARGETS
-  talker
-  listener
-  DESTINATION lib/${PROJECT_NAME})
+  cpp_pubsub_components
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin)
+
+# Install launch files
+install(DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}
+)
 
 ament_package()
