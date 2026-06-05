@@ -24,6 +24,8 @@ from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 
 from turtlesim.srv import Spawn
+from rclpy.duration import Duration
+from rclpy.time import Time
 
 
 class FrameListener(Node):
@@ -55,21 +57,35 @@ class FrameListener(Node):
     def on_timer(self):
         # Store frame names in variables that will be used to
         # compute transformations
-        from_frame_rel = self.target_frame
+        # We want the pose of `carrot1` 5 seconds ago relative to the
+        # current position of `turtle2`.
+        source_frame = 'carrot1'
         to_frame_rel = 'turtle2'
 
         if self.turtle_spawning_service_ready:
             if self.turtle_spawned:
+                now_ns = self.get_clock().now().nanoseconds
+                five_seconds_ns = Duration(seconds=5, nanoseconds=0).nanoseconds
+                when = Time(nanoseconds=(now_ns - five_seconds_ns))
+                # 5. 定义 50 毫秒的阻塞等待超时时间
+                timeout = Duration(seconds=0, nanoseconds=50_000_000)
                 # Look up for the transformation between target_frame and turtle2 frames
                 # and send velocity commands for turtle2 to reach target_frame
                 try:
-                    t = self.tf_buffer.lookup_transform(
+                    # lookup_transform_full(target_frame, target_time,
+                    #                       source_frame, source_time,
+                    #                       fixed_frame, timeout)
+                    target_time = Time(nanoseconds=now_ns)
+                    t = self.tf_buffer.lookup_transform_full(
                         to_frame_rel,
-                        from_frame_rel,
-                        rclpy.time.Time())
+                        target_time,
+                        source_frame,
+                        when,
+                        "world",
+                        timeout)
                 except TransformException as ex:
                     self.get_logger().info(
-                        f'Could not transform {to_frame_rel} to {from_frame_rel}: {ex}')
+                        f'Could not transform {to_frame_rel} to {source_frame}: {ex}')
                     return
 
                 msg = Twist()
