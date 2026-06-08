@@ -1,4 +1,6 @@
 from setuptools import find_packages, setup
+import os
+from glob import glob
 
 package_name = 'learning_tf2_py'
 
@@ -11,8 +13,8 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
         # Install launch files
-        ('share/' + package_name + '/launch', ['launch/turtle_tf2_demo_launch.py']),
-        ('share/' + package_name + '/launch', ['launch/turtle_tf2_fixed_frame_demo_launch.py']),
+        # ('share/' + package_name + '/launch', ['launch/turtle_tf2_demo_launch.py']),
+        (os.path.join('share', package_name, 'launch'), glob('launch/*')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -31,6 +33,7 @@ setup(
             'turtle_tf2_broadcaster = learning_tf2_py.turtle_tf2_broadcaster:main',
             'turtle_tf2_listener = learning_tf2_py.turtle_tf2_listener:main',
             'fixed_frame_tf2_broadcaster = learning_tf2_py.fixed_frame_tf2_broadcaster:main',
+            'turtle_tf2_message_broadcaster = learning_tf2_py.turtle_tf2_message_broadcaster:main',
         ],
     },
 )
