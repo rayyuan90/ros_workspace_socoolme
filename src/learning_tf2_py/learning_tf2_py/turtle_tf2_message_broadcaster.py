@@ -72,8 +72,17 @@ class PointPublisher(Node):
             # would cause high CPU and duplicate callbacks.
             if not hasattr(self, 'sub'):
                 self.vel_pub = self.create_publisher(Twist, 'turtle3/cmd_vel', 10)
-                self.sub = self.create_subscription(Pose, 'turtle3/pose', self.handle_turtle_pose, 10)
-                self.pub = self.create_publisher(PointStamped, 'turtle3/turtle_point_stamped', 10)
+                self.sub = self.create_subscription(
+                    Pose,
+                    'turtle3/pose',
+                    self.handle_turtle_pose,
+                    10,
+                )
+                self.pub = self.create_publisher(
+                    PointStamped,
+                    'turtle3/turtle_point_stamped',
+                    10,
+                )
 
     def handle_turtle_pose(self, msg):
         vel_msg = Twist()
