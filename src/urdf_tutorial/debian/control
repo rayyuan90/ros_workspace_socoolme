@@ -1,0 +1,12 @@
+Source: ros-jazzy-urdf-tutorial
+Section: misc
+Priority: optional
+Maintainer: David V. Lu!! <davidvlu@gmail.com>
+Build-Depends: debhelper (>= 9.0.0), ros-jazzy-ament-cmake, ros-jazzy-ament-lint-auto <!nocheck>, ros-jazzy-ros-workspace
+Homepage: http://ros.org/wiki/urdf_tutorial
+Standards-Version: 3.9.2
+
+Package: ros-jazzy-urdf-tutorial
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-jazzy-urdf-launch, ros-jazzy-ros-workspace
+Description: This package contains a number of URDF tutorials.
