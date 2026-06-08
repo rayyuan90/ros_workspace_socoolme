@@ -6,3 +6,4 @@ log/
 # Ignore local hidden tool configs
 .build/
 .cache/
+__pycache__/
