@@ -84,7 +84,18 @@ void StatePublisher::publish(){
         hinc*=-1;
     }
     swivel+=degree;  // Increment by 1 degree (in radians)
+    // Keep rotating values within reasonable ranges to avoid very large
+    // angles which can cause visualization/jitter issues in TF/RViz.
+    if (swivel > M_PI) {
+        swivel -= 2.0 * M_PI;
+    } else if (swivel < -M_PI) {
+        swivel += 2.0 * M_PI;
+    }
+
     angle+=degree;    // Change angle at a slower pace
+    if (angle > 2.0 * M_PI) {
+        angle = std::fmod(angle, 2.0 * M_PI);
+    }
 
     // send message
     broadcaster->sendTransform(t);
