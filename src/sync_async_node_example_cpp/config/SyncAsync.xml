@@ -12,47 +12,47 @@
     </subscriber>
 
     <!-- publisher profile for topic sync_topic -->
-  <!-- publisher profile for topic sync_topic -->
-<publisher profile_name="/sync_topic">
-    <historyMemoryPolicy>DYNAMIC</historyMemoryPolicy>
-    <qos>
-        <publishMode>
-            <kind>SYNCHRONOUS</kind>
-        </publishMode>
-        <partition>
-            <names>
-                <name>part1</name>
-            </names>
-        </partition>
-    </qos>
-</publisher>
+    <!-- publisher profile for topic sync_topic -->
+    <publisher profile_name="/sync_topic">
+        <historyMemoryPolicy>DYNAMIC</historyMemoryPolicy>
+        <qos>
+            <publishMode>
+                <kind>SYNCHRONOUS</kind>
+            </publishMode>
+            <partition>
+                <names>
+                    <name>part1</name>
+                </names>
+            </partition>
+        </qos>
+    </publisher>
 
-<!-- subscriber profile for topic sync_topic -->
-<subscriber profile_name="/sync_topic">
-    <historyMemoryPolicy>DYNAMIC</historyMemoryPolicy>
-    <qos>
-        <partition>
-            <names>
-                <name>part2</name>
-            </names>
-        </partition>
-    </qos>
-</subscriber>
+    <!-- subscriber profile for topic sync_topic -->
+    <subscriber profile_name="/sync_topic">
+        <historyMemoryPolicy>DYNAMIC</historyMemoryPolicy>
+        <qos>
+            <partition>
+                <names>
+                    <name>part2</name>
+                </names>
+            </partition>
+        </qos>
+    </subscriber>
 
     <!-- publisher profile for topic async_topic -->
-<!-- publisher profile for topic async_topic -->
-<publisher profile_name="/async_topic">
-    <historyMemoryPolicy>DYNAMIC</historyMemoryPolicy>
-    <qos>
-        <publishMode>
-            <kind>ASYNCHRONOUS</kind>
-        </publishMode>
-    </qos>
-    <matchedSubscribersAllocation>
-        <initial>0</initial>
-        <maximum>1</maximum>
-        <increment>1</increment>
-    </matchedSubscribersAllocation>
-</publisher>
+    <!-- publisher profile for topic async_topic -->
+    <publisher profile_name="/async_topic">
+        <historyMemoryPolicy>DYNAMIC</historyMemoryPolicy>
+        <qos>
+            <publishMode>
+                <kind>ASYNCHRONOUS</kind>
+            </publishMode>
+        </qos>
+        <matchedSubscribersAllocation>
+            <initial>0</initial>
+            <maximum>1</maximum>
+            <increment>1</increment>
+        </matchedSubscribersAllocation>
+    </publisher>
 
- </profiles>
+</profiles>

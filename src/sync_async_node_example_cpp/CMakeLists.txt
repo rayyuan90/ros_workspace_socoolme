@@ -18,7 +18,21 @@ add_executable(SyncAsyncWriter src/sync_async_writer.cpp)
 ament_target_dependencies(SyncAsyncWriter rclcpp std_msgs)
 add_executable(SyncAsyncReader src/sync_async_reader.cpp)
 ament_target_dependencies(SyncAsyncReader rclcpp std_msgs)
+find_package(example_interfaces REQUIRED)
 
+add_executable(ping_service src/ping_service.cpp)
+ament_target_dependencies(ping_service example_interfaces rclcpp)
+
+add_executable(ping_client src/ping_client.cpp)
+ament_target_dependencies(ping_client example_interfaces rclcpp)
+
+install(TARGETS
+    ping_service
+    DESTINATION lib/${PROJECT_NAME})
+
+install(TARGETS
+    ping_client
+    DESTINATION lib/${PROJECT_NAME})
 install(TARGETS
     SyncAsyncReader
     DESTINATION lib/${PROJECT_NAME})
