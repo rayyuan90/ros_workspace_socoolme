@@ -1,0 +1,30 @@
+rosbag2_bagfile_information:
+  version: 9
+  storage_identifier: mcap
+  duration:
+    nanoseconds: 99000000000
+  starting_time:
+    nanoseconds_since_epoch: 1781160720783939310
+  message_count: 100
+  topics_with_message_count:
+    - topic_metadata:
+        name: synthetic
+        type: example_interfaces/msg/Int32
+        serialization_format: cdr
+        offered_qos_profiles:
+          []
+        type_description_hash: ""
+      message_count: 100
+  compression_format: ""
+  compression_mode: ""
+  relative_file_paths:
+    - big_synthetic_bag_0.mcap
+  files:
+    - path: big_synthetic_bag_0.mcap
+      starting_time:
+        nanoseconds_since_epoch: 1781160720783939310
+      duration:
+        nanoseconds: 99000000000
+      message_count: 200
+  custom_data: ~
+  ros_distro: jazzy
