@@ -1,0 +1,21 @@
+/ {
+    soc {
+        #address-cells = <1>;
+        #size-cells = <1>;
+
+        /* 💥 构建我们的具身机器人底层硬件节点 */
+        robot_chassis@40001000 {
+            compatible = "rayyuan,robot-chassis-1.0"; /* 驱动匹配的绝对密钥 */
+            reg = <0x40001000 0x40>;                   /* 寄存器物理首地址及映射长度 */
+            
+            /* 中断矩阵声明 */
+            interrupt-parent = <&gicv3>;                /* 指定系统的 GIC 中断控制器 */
+            interrupts = <GIC_SPI 42 IRQ_TYPE_EDGE_RISING>; /* 42号中断，上升沿触发 */
+            
+            /* 属性扩展：刹车引脚绑定 */
+            motor-brake-gpios = <&gpioa 5 GPIO_ACTIVE_HIGH>; /* 绑定 GPIOA 的 Pin 5 */
+            
+            status = "okay";
+        };
+    };
+};
