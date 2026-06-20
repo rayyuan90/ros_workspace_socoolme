@@ -5,66 +5,64 @@
 #include <linux/mutex.h>
 #include <linux/platform_device.h>
 #include <linux/version.h>
-#include <linux/gpio/consumer.h> // Added for modern GPIO descriptor mapping
+#include <linux/irq_sim.h> // Linux kernel interrupt simulation subsystem
 
 #define MODULE_NAME "robot_lidar_irq"
 
-static int lidar_irq_number;      /* Changed: Will be assigned dynamically by the kernel */
+static int lidar_irq_number;
 static struct mutex data_lock;    
 static struct platform_device *lidar_pdev;
-static struct gpio_desc *lidar_gpio; // Virtual descriptor to back our interrupt
+static struct irq_domain *sim_domain; // Virtual interrupt allocator
 
 /* =========================================================================
- * 1. 顶半部 (Top Half / Hard IRQ)
+ * 1. Top Half (Hard IRQ Context)
  * ========================================================================= */
 static irqreturn_t lidar_hard_irq_handler(int irq, void *dev_id) {
+    /* Fast pathway: fire the bottom half thread immediately */
     return IRQ_WAKE_THREAD;
 }
 
 /* =========================================================================
- * 2. 底半部 (Bottom Half / Threaded IRQ)
+ * 2. Bottom Half (Threaded Process Context)
  * ========================================================================= */
 static irqreturn_t lidar_threaded_irq_handler(int irq, void *dev_id) {
-    pr_info("[%s] Bottom half: Kernel thread woken up! Context: %s (PID: %d)\n", 
+    pr_info("[%s] Bottom half active! Handled by thread: %s (PID: %d)\n", 
             MODULE_NAME, current->comm, current->pid);
 
     mutex_lock(&data_lock);
-    pr_info("[%s] Parsing 4KB point cloud data data...\n", MODULE_NAME);
-    msleep(5); 
+    pr_info("[%s] Simulating 4KB Lidar data decompression...\n", MODULE_NAME);
+    msleep(5); // Safe to sleep here!
     mutex_unlock(&data_lock);
     
-    pr_info("[%s] Bottom half: Point cloud ready. Heading back to sleep.\n", MODULE_NAME);
+    pr_info("[%s] Processing complete. Thread returning to sleep.\n", MODULE_NAME);
     return IRQ_HANDLED;
 }
 
 /* =========================================================================
- * 3. 驱动生命周期与总线匹配
+ * 3. Driver Probe & Initialization Lifecycle
  * ========================================================================= */
 static int lidar_irq_probe(struct platform_device *pdev) {
     int ret;
     struct device *dev = &pdev->dev;
     
-    pr_info("[%s] Device matched. Registering Dynamic Threaded IRQ...\n", MODULE_NAME);
-
+    pr_info("[%s] Device matched. Allocating software IRQ simulation context...\n", MODULE_NAME);
     mutex_init(&data_lock);
 
-    /* Look up a virtual GPIO line (using "index 0" of optional properties).
-     * This registers a safe software hook that the kernel can convert into a valid IRQ line */
-    lidar_gpio = gpiod_get_index_optional(dev, "lidar", 0, GPIOD_IN);
-    if (IS_ERR(lidar_gpio)) {
-        return PTR_ERR(lidar_gpio);
+    /* Allocate a managed software interrupt domain with 1 available interrupt line */
+    sim_domain = devm_irq_domain_create_sim(dev, NULL, 1);
+    if (IS_ERR(sim_domain)) {
+        pr_err("[%s] Failed to allocate software IRQ domain\n", MODULE_NAME);
+        return PTR_ERR(sim_domain);
     }
 
-    if (lidar_gpio) {
-        /* Ask the framework to dynamically assign a valid system IRQ number for this line */
-        lidar_irq_number = gpiod_to_irq(lidar_gpio);
-    } else {
-        /* Fallback: If no device tree pin is mapped on PC emulation, use an absolute dummy line 
-         * that is safe on x86 architectures instead of a low reserved ISA line */
-        lidar_irq_number = 64; 
+    /* Retrieve the dynamically assigned, safe system IRQ number for line index 0 */
+    lidar_irq_number = irq_create_mapping(sim_domain, 0);
+    if (lidar_irq_number <= 0) {
+        pr_err("[%s] Failed to map simulation IRQ descriptor\n", MODULE_NAME);
+        return -EINVAL;
     }
 
-    /* 💥 核心：使用动态或安全分配的 IRQ 号注册线程化中断 */
+    /* Register the Threaded IRQ on our safe, simulated line */
     ret = request_threaded_irq(
         lidar_irq_number,
         lidar_hard_irq_handler,     
@@ -75,12 +73,12 @@ static int lidar_irq_probe(struct platform_device *pdev) {
     );
 
     if (ret) {
-        pr_err("[%s] Failed to request threaded IRQ %d: error %d\n", MODULE_NAME, lidar_irq_number, ret);
-        if (lidar_gpio) gpiod_put(lidar_gpio);
+        pr_err("[%s] Threaded IRQ allocation failed on IRQ %d: error %d\n", MODULE_NAME, lidar_irq_number, ret);
+        irq_dispose_mapping(lidar_irq_number);
         return ret;
     }
 
-    pr_info("[%s] Threaded IRQ successfully requested on valid IRQ %d\n", MODULE_NAME, lidar_irq_number);
+    pr_info("[%s] Threaded IRQ successfully requested on SAFE SYSTEM IRQ %d\n", MODULE_NAME, lidar_irq_number);
     return 0;
 }
 
@@ -91,11 +89,9 @@ static int lidar_irq_remove(struct platform_device *pdev)
 #endif
 {
     free_irq(lidar_irq_number, &data_lock);
-    if (lidar_gpio) {
-        gpiod_put(lidar_gpio);
-    }
+    irq_dispose_mapping(lidar_irq_number);
     mutex_destroy(&data_lock);
-    pr_info("[%s] Driver removed. IRQ freed.\n", MODULE_NAME);
+    pr_info("[%s] Driver unloaded clean. IRQ resources freed.\n", MODULE_NAME);
 #if LINUX_VERSION_CODE < KERNEL_VERSION(6, 11, 0)
     return 0;
 #endif
@@ -128,4 +124,4 @@ module_exit(lidar_irq_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Ray Yuan");
-MODULE_DESCRIPTION("Threaded IRQ Real-Time Driver Example");
+MODULE_DESCRIPTION("Threaded IRQ Real-Time Driver Emulation");

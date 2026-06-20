@@ -1153,10 +1153,26 @@ deps_robot_lidar_irq.o := \
   /usr/src/linux-headers-6.17.0-35-generic/arch/x86/include/asm/device.h \
   /usr/src/linux-headers-6.17.0-35-generic/include/linux/pm_wakeup.h \
   /usr/src/linux-headers-6.17.0-35-generic/include/generated/uapi/linux/version.h \
-  /usr/src/linux-headers-6.17.0-35-generic/include/linux/gpio/consumer.h \
-    $(wildcard include/config/GPIOLIB) \
-    $(wildcard include/config/HTE) \
-    $(wildcard include/config/GPIO_SYSFS) \
+  /usr/src/linux-headers-6.17.0-35-generic/include/linux/irq_sim.h \
+  /usr/src/linux-headers-6.17.0-35-generic/include/linux/fwnode.h \
+  /usr/src/linux-headers-6.17.0-35-generic/include/linux/irqdomain.h \
+    $(wildcard include/config/IRQ_DOMAIN_HIERARCHY) \
+    $(wildcard include/config/GENERIC_IRQ_DEBUGFS) \
+    $(wildcard include/config/IRQ_DOMAIN) \
+    $(wildcard include/config/IRQ_DOMAIN_NOMAP) \
+  /usr/src/linux-headers-6.17.0-35-generic/include/linux/irqdomain_defs.h \
+  /usr/src/linux-headers-6.17.0-35-generic/include/linux/irqhandler.h \
+  /usr/src/linux-headers-6.17.0-35-generic/include/linux/of.h \
+    $(wildcard include/config/OF_DYNAMIC) \
+    $(wildcard include/config/SPARC) \
+    $(wildcard include/config/OF_PROMTREE) \
+    $(wildcard include/config/OF_KOBJ) \
+    $(wildcard include/config/OF_NUMA) \
+    $(wildcard include/config/OF_OVERLAY) \
+  /usr/src/linux-headers-6.17.0-35-generic/include/linux/mod_devicetable.h \
+  /usr/src/linux-headers-6.17.0-35-generic/include/uapi/linux/mei.h \
+  /usr/src/linux-headers-6.17.0-35-generic/include/uapi/linux/mei_uuid.h \
+  /usr/src/linux-headers-6.17.0-35-generic/include/linux/property.h \
 
 robot_lidar_irq.o: $(deps_robot_lidar_irq.o)
 

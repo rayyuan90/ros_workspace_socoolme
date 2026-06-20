@@ -22,8 +22,8 @@ __used __section("__versions") = {
 	{ 0x67628f51, "msleep" },
 	{ 0xf46d5bf3, "mutex_unlock" },
 	{ 0xc1e6c71e, "__mutex_init" },
-	{ 0x77ef2dc7, "gpiod_get_index_optional" },
-	{ 0xfeeac846, "gpiod_to_irq" },
+	{ 0x67aaf2dd, "devm_irq_domain_create_sim" },
+	{ 0xc370271c, "irq_create_mapping_affinity" },
 	{ 0x9126ce86, "request_threaded_irq" },
 	{ 0x102ec640, "platform_device_unregister" },
 	{ 0xea97e6f1, "platform_driver_unregister" },
@@ -34,7 +34,7 @@ __used __section("__versions") = {
 	{ 0xd272d446, "__fentry__" },
 	{ 0xd272d446, "__x86_return_thunk" },
 	{ 0x9dd4105e, "free_irq" },
-	{ 0x7acf5086, "gpiod_put" },
+	{ 0x3ef430b3, "irq_dispose_mapping" },
 	{ 0xe8213e80, "_printk" },
 	{ 0xd94efd11, "const_current_task" },
 	{ 0x814e12e5, "module_layout" },
@@ -46,8 +46,8 @@ __used __section("__version_ext_crcs") = {
 	0x67628f51,
 	0xf46d5bf3,
 	0xc1e6c71e,
-	0x77ef2dc7,
-	0xfeeac846,
+	0x67aaf2dd,
+	0xc370271c,
 	0x9126ce86,
 	0x102ec640,
 	0xea97e6f1,
@@ -58,7 +58,7 @@ __used __section("__version_ext_crcs") = {
 	0xd272d446,
 	0xd272d446,
 	0x9dd4105e,
-	0x7acf5086,
+	0x3ef430b3,
 	0xe8213e80,
 	0xd94efd11,
 	0x814e12e5,
@@ -69,8 +69,8 @@ __used __section("__version_ext_names") =
 	"msleep\0"
 	"mutex_unlock\0"
 	"__mutex_init\0"
-	"gpiod_get_index_optional\0"
-	"gpiod_to_irq\0"
+	"devm_irq_domain_create_sim\0"
+	"irq_create_mapping_affinity\0"
 	"request_threaded_irq\0"
 	"platform_device_unregister\0"
 	"platform_driver_unregister\0"
@@ -81,7 +81,7 @@ __used __section("__version_ext_names") =
 	"__fentry__\0"
 	"__x86_return_thunk\0"
 	"free_irq\0"
-	"gpiod_put\0"
+	"irq_dispose_mapping\0"
 	"_printk\0"
 	"const_current_task\0"
 	"module_layout\0"
@@ -90,4 +90,4 @@ __used __section("__version_ext_names") =
 MODULE_INFO(depends, "");
 
 
-MODULE_INFO(srcversion, "8F7EB75707702A589472758");
+MODULE_INFO(srcversion, "E475F451DA523153667721B");
