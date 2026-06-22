@@ -6,6 +6,9 @@
 #include <linux/platform_device.h>
 #include <linux/version.h>
 #include <linux/irq_sim.h> // Linux kernel interrupt simulation subsystem
+#include <linux/fs.h>      // For file_operations
+#include <linux/cdev.h>    // For cdev structures
+#include <linux/uaccess.h> // For copy_to_user
 
 #define MODULE_NAME "robot_lidar_irq"
 
@@ -37,6 +40,29 @@ static irqreturn_t lidar_threaded_irq_handler(int irq, void *dev_id) {
     pr_info("[%s] Processing complete. Thread returning to sleep.\n", MODULE_NAME);
     return IRQ_HANDLED;
 }
+
+static dev_t dev_num;
+static struct cdev lidar_cdev;
+static struct class *lidar_class;
+static char mock_point_cloud_buffer[128]; // Shared hardware data buffer
+
+// 1. Define what happens when userspace reads /dev/robot_lidar
+static ssize_t lidar_read(struct file *filp, char __user *buf, size_t count, loff_t *f_pos) {
+    mutex_lock(&data_lock);
+    // Copy the parsed lidar data safely over the kernel-to-user space boundary
+    if (copy_to_user(buf, mock_point_cloud_buffer, sizeof(mock_point_cloud_buffer))) {
+        mutex_unlock(&data_lock);
+        return -EFAULT;
+    }
+    mutex_unlock(&data_lock);
+    return sizeof(mock_point_cloud_buffer);
+}
+
+// 2. Set up the file operations mapping
+static const struct file_operations lidar_fops = {
+    .owner = THIS_MODULE,
+    .read = lidar_read,
+};
 
 /* =========================================================================
  * 3. Driver Probe & Initialization Lifecycle
@@ -79,6 +105,14 @@ static int lidar_irq_probe(struct platform_device *pdev) {
     }
 
     pr_info("[%s] Threaded IRQ successfully requested on SAFE SYSTEM IRQ %d\n", MODULE_NAME, lidar_irq_number);
+    alloc_chrdev_region(&dev_num, 0, 1, MODULE_NAME);
+    cdev_init(&lidar_cdev, &lidar_fops);
+    cdev_add(&lidar_cdev, dev_num, 1);
+
+    // 4. Create /dev/robot_lidar automatically
+    lidar_class = class_create(MODULE_NAME);
+    device_create(lidar_class, NULL, dev_num, NULL, "robot_lidar");
+
     return 0;
 }
 
